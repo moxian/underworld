@@ -196,7 +196,7 @@ class Plugin:
         """
         self._app = QtGui.QApplication([])
         self._widget = MainWidget(self)
-        self.game.onTurnEnd = self._turnEnd
+        self.game.register_turn_end_handler(self._turnEnd)
         self._readyEvent.set( )
         self._app.exec_()
 

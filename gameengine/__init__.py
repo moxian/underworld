@@ -25,11 +25,14 @@ class Game:
     from .celldefs import Cell, Object, Building, Farm, Castle, Barracks, Unit, Warrior, Wall, ObjTypes, ObjTypeDict
 
     def __init__(self):
-        self.onTurnEnd = None
+        self.onTurnEnd = []
         self._buildRequests = dict( )
         self._spawnRequests = dict( )
         self._moveRequests = dict( )
         self._cellsToCleanup = set()
+
+    def register_turn_end_handler(self, handler):
+        self.onTurnEnd.append(handler)
 
     def setClients(self, clients, gameDesc):
         ''' initializes the game with specified list of clients '''
@@ -115,13 +118,14 @@ class Game:
                     res.append((PlayerState.THINKING, self.getPlayerInfoString(iPlayer) + "end\n"))
             else:
                 res.append((self.players[iPlayer].client.state, "end\n"))
-        if callable(self.onTurnEnd):
-            try:
-                self.onTurnEnd( )
-            except Exception as err:
-                # the interactive UI is dead
-                print("The pluging died - %s" % repr(err))
-                self.onTurnEnd = None
+        for handler_no, turn_end_handler in enumerate(self.onTurnEnd):
+            if callable(turn_end_handler):
+                try:
+                    turn_end_handler()
+                except Exception as err:
+                    # the interactive UI is dead
+                    print("The pluging died - %s" % repr(err))
+                    self.onTurnEnd[handler_no] = None
         return res
     def saveResults(self, filename):
         #just dump the survivors

@@ -22,7 +22,7 @@ class Plugin:
             self.outputFile = io.TextIOWrapper(gzip.GzipFile(filename=self._options.output_file, mode="w"))
         else:
             self.outputFile = open(self._options.output_file, "w")
-        game.onTurnEnd = self._onTurnEnd
+        game.register_turn_end_handler(self._onTurnEnd)
     def _onTurnEnd(self):
         d = {
             "turn": self._game.turn,

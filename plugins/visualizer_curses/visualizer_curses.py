@@ -30,7 +30,7 @@ class VizualizerCursesPlugin:
         self.turn_time = self._options.turn_time
 
         self.game = game
-        self.game.onTurnEnd = self._turn_end
+        self.game.register_turn_end_handler(self._turn_end)
         self.curses_scr = None
         self.win_field = None
         self.win_players = None
