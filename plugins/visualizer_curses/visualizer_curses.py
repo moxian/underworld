@@ -36,7 +36,22 @@ class VizualizerCursesPlugin:
         self.win_players = None
         self.win_log = None
         self.player_colors = {}
-        self._curses_init(game)
+
+    def __enter__(self):
+        self._curses_init(self.game)
+
+    def __exit__(self, _exc_type, _exc_value, _traceback):
+        if self.curses_scr is not None:
+            curses.endwin()
+            self.curses_scr = None
+
+    def __del__(self):
+        # __del__'s black magic is not particularly nice, but accidentally
+        # leaving user console messed up is even worse
+        # this actually should never happen, as __exit__ will be called previously
+        # but just in case
+        if getattr(self, 'curses_scr', None) is not None:
+            curses.endwin()
 
     def _curses_init(self, game):
         "initialize curses library and several windows"
@@ -63,15 +78,6 @@ class VizualizerCursesPlugin:
             3: 5
         }
         return
-
-    def __del__(self):
-        # __del__'s black magic is not particularly nice, but accidentally
-        # leaving user console messed up is even worse
-        try:
-            if self.curses_scr is not None:
-                curses.endwin()
-        except AttributeError:
-            pass
 
     def show_field(self):
         " draw game field in console "
