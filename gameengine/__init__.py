@@ -118,9 +118,9 @@ class Game:
         if callable(self.onTurnEnd):
             try:
                 self.onTurnEnd( )
-            except Exception as e:
+            except Exception as err:
                 # the interactive UI is dead
-                print("The pluging died!")
+                print("The pluging died - %s" % repr(err))
                 self.onTurnEnd = None
         return res
     def saveResults(self, filename):
